@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, BarChart3, Plus, X, CreditCard, Banknote, Receipt, FileText, Clock, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Plus, X, CreditCard, Banknote, Receipt, FileText, Clock, AlertCircle } from 'lucide-react';
 
 interface Transaction {
   type: 'entrada' | 'salida';
@@ -65,6 +64,42 @@ export default function Home() {
     dueDate: '',
     description: ''
   });
+
+  // Cargar datos del localStorage al iniciar
+  useEffect(() => {
+    const savedMonthData = localStorage.getItem('monthData');
+    const savedFixedExpenses = localStorage.getItem('fixedExpenses');
+    const savedTaxes = localStorage.getItem('taxes');
+    const savedBills = localStorage.getItem('bills');
+
+    if (savedMonthData) setMonthData(JSON.parse(savedMonthData));
+    if (savedFixedExpenses) setFixedExpenses(JSON.parse(savedFixedExpenses));
+    if (savedTaxes) setTaxes(JSON.parse(savedTaxes));
+    if (savedBills) {
+      const parsedBills = JSON.parse(savedBills);
+      setBills(parsedBills.map((bill: any) => ({
+        ...bill,
+        dueDate: new Date(bill.dueDate)
+      })));
+    }
+  }, []);
+
+  // Guardar datos en localStorage cuando cambien
+  useEffect(() => {
+    localStorage.setItem('monthData', JSON.stringify(monthData));
+  }, [monthData]);
+
+  useEffect(() => {
+    localStorage.setItem('fixedExpenses', JSON.stringify(fixedExpenses));
+  }, [fixedExpenses]);
+
+  useEffect(() => {
+    localStorage.setItem('taxes', JSON.stringify(taxes));
+  }, [taxes]);
+
+  useEffect(() => {
+    localStorage.setItem('bills', JSON.stringify(bills));
+  }, [bills]);
 
   const monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -329,20 +364,9 @@ export default function Home() {
           <p className="text-lg sm:text-xl text-gray-600">
             Gestiona tus entradas y salidas diarias
           </p>
-          
-          {/* Botón Dashboard */}
-          <div className="mt-6">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
-            >
-              <BarChart3 className="w-5 h-5" />
-              Ver Dashboard y Notificaciones
-            </Link>
-          </div>
         </div>
 
-        {/* SECCIÓN NUEVA - Cuentas a Pagar */}
+        {/* SECCIÓN - Cuentas a Pagar */}
         <div className="bg-white rounded-3xl shadow-2xl p-6 border border-gray-200 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -568,7 +592,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Summary Cards - ACTUALIZADAS */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6">
           {/* Entradas en Tarjeta */}
           <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl p-4 sm:p-6 border border-cyan-200">

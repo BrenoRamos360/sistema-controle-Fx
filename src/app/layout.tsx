@@ -6,7 +6,6 @@ import "@fontsource/roboto";
 import "@fontsource/fira-code";
 import "@fontsource/jetbrains-mono";
 import "./globals.css";
-import { AuthProvider } from "@/components/custom/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Control Financiero",
@@ -21,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-inter antialiased">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );
